@@ -17,7 +17,17 @@ def part1(inputs: list["LineSeg"]):
     print(score_grid(grid))
 
 def part2(inputs: list["LineSeg"]):
-    pass
+    print("=== PART 1 ===")
+    _max = max([max(line.a.x, line.a.y, line.b.x, line.b.y) for line in inputs])
+    grid_size = 10**len(str(_max))
+
+    grid = [[0 for _ in range(grid_size)] for _ in range(grid_size)]
+
+    for line in inputs:
+        mark_points(grid, line, diagonals=True)
+
+    # print_grid(grid)
+    print(score_grid(grid))
 
 def is_ortho(line_seg: "LineSeg") -> bool:
     return (line_seg.a.x == line_seg.b.x) or (line_seg.a.y == line_seg.b.y)
@@ -29,7 +39,7 @@ def distance(a: "Point", b: "Point") -> float:
     # Euclidean distance
     return sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
 
-def mark_points(grid: list[list[int]], line: "LineSeg"):
+def mark_points(grid: list[list[int]], line: "LineSeg", diagonals=False):
     ax, ay = line.a.x, line.a.y
     bx, by = line.b.x, line.b.y
 
@@ -44,6 +54,15 @@ def mark_points(grid: list[list[int]], line: "LineSeg"):
         for i in range(abs(ax - bx) + 1):
             grid[start+i][ay] += 1
             # print(f"\tmarking point {Point(start+i, ay)}")
+
+    elif diagonals:
+        abs_inc = abs(ax-bx)
+        x_inc = int((bx-ax)/abs_inc)
+        y_inc = int((by-ay)/abs_inc)
+        # print(f"{line.a=}, {line.b=}, {abs_inc=}, {x_inc=}, {y_inc}")
+        for i in range(abs_inc+1):
+            grid[line.a.x + x_inc*i][line.a.y + y_inc*i] += 1
+            # print(f"\tmarking point {Point(line.a.x+x_inc*i, line.b.y+y_inc*i)}")
 
 def print_grid(grid: list[list[int]]) -> None:
     grid_size = len(grid)
@@ -110,5 +129,5 @@ if __name__ == "__main__":
     file_contents = read_input()
     inputs = process_inputs(file_contents)
     part1(inputs)
-    # part2(inputs)
+    part2(inputs)
 
